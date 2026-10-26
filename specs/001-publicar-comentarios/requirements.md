@@ -2,7 +2,7 @@
 
 - **Nombre del proyecto:** App de Comentarios
 - **Feature:** `001-publicar-comentarios`
-- **Versión del documento:** 1.1
+- **Versión del documento:** 1.2
 - **Estado:** APROBADO — base del [`design.md`](./design.md)
 - **Semana:** 3 — SDD I (Spec First), anclado en Semana 4
 
@@ -41,8 +41,12 @@ MySQL y XAMPP en el contexto; eso es stack tecnológico y se movió a la secció
   cuenta como un carácter (una "á" cuenta como 1).
 - **Artículo:** fuera del alcance de la v1. La app no muestra artículos ni separa
   conversaciones por artículo.
-- **Moderador:** fuera del alcance de la v1. Se define cuando exista el dominio de
-  moderación (F-MOD).
+- **Moderador:** persona autorizada a borrar comentarios y respuestas ofensivos
+  (F-MOD-001). El rol está declarado en esta spec, pero en la v1 nadie lo ejerce desde la app:
+  la forma de reconocer a un moderador se define junto con la autenticación, en una versión
+  futura.
+- **Comentario ofensivo:** comentario o respuesta que un moderador decide borrar. El criterio
+  es editorial y lo aplica una persona; la app no evalúa el contenido.
 
 <!-- corregido por: la plantilla dejaba "Artículo" y "Moderador" sin definir. Se definen
 explícitamente como fuera de alcance para que nadie (humano o agente) los implemente por su
@@ -107,6 +111,9 @@ los espacios de los extremos no cuentan, pero para el autor no: "  Ana  " quedab
   lo originó (el de nuevo comentario o el de respuesta). Los mensajes de éxito desaparecen a
   los 3 segundos; los de error permanecen hasta el siguiente envío o hasta que se cierra ese
   formulario.
+- **RN-011 — Borrado solo por moderador.** Solo un moderador puede borrar un comentario o una
+  respuesta. Mientras no exista una forma de reconocer a un moderador, nadie puede borrar
+  desde la app (RN-009 sigue vigente para la v1).
 
 <!-- corregido por: puesta en común (checklist punto 8). Los saltos de línea estaban en
 "Pendientes para Semana 4", pero si un texto de dos párrafos se ve en dos párrafos es
@@ -165,7 +172,7 @@ compartir mi opinión con los demás lectores.
 (500). -->
 
 
-**Fuera de alcance de esta feature:** edición y borrado de comentarios (F-MOD, versión
+**Fuera de alcance de esta feature:** edición y borrado de comentarios (F-MOD-001, versión
 futura), likes y reacciones, formato de texto enriquecido, adjuntar imágenes o enlaces
 clicables, recordar el nombre del autor entre visitas.
 
@@ -261,6 +268,43 @@ en el contador general.
 
 ---
 
+### F-MOD-001: Borrar un comentario ofensivo
+
+> **Estado: especificada y diferida.** Fuera del alcance de la v1 (ver sección 6). Se
+> especifica ahora para que el rol moderador y la regla RN-011 queden definidos antes de
+> construir la autenticación, y para que nadie implemente un borrado "por las dudas".
+
+**Historia de usuario:** Como moderador, quiero borrar un comentario o una respuesta
+ofensivos, para que dejen de verse en la conversación y no la arruinen para los demás
+lectores.
+
+**Reglas que aplica:** RN-009, RN-010, RN-011.
+
+**Criterios de aceptación:**
+
+- **CA-1. Borrar un comentario.** Dado que soy un moderador reconocido por la app y la lista
+  muestra un comentario con 2 respuestas, cuando presiono "Borrar" en ese comentario y
+  confirmo, entonces el comentario y sus 2 respuestas dejan de mostrarse, el contador baja en 1
+  y se muestra el mensaje "Comentario borrado".
+- **CA-2. Borrar una respuesta.** Dado que soy un moderador reconocido y la lista muestra una
+  respuesta, cuando presiono "Borrar" en esa respuesta y confirmo, entonces solo esa respuesta
+  deja de mostrarse; su comentario y las demás respuestas siguen igual.
+- **CA-3. Cancelar.** Dado que soy un moderador reconocido y presioné "Borrar", cuando cancelo
+  la confirmación, entonces no se borra nada y la lista queda como estaba.
+- **CA-4. Lector sin permiso.** Dado que no soy un moderador reconocido, cuando se muestra la
+  lista, entonces ningún comentario ni respuesta tiene botón "Borrar"; y si se intenta borrar
+  por fuera de la interfaz, entonces se rechaza con el mensaje "No tenés permiso para borrar"
+  y no se borra nada.
+- **CA-5. Ya borrado.** Dado que otro moderador ya borró un comentario, cuando intento
+  borrarlo, entonces se muestra el mensaje "El comentario ya no existe" y la lista se
+  actualiza.
+
+**Fuera de alcance de esta feature:** reportes de lectores, detección automática de
+contenido ofensivo, restaurar lo borrado, editar comentarios, historial de borrados visible
+para los lectores, la autenticación del moderador (es una feature propia).
+
+---
+
 ## 6. Alcance del proyecto
 
 ### DENTRO del alcance (v1)
@@ -277,8 +321,9 @@ en el contador general.
 | Funcionalidad | Gesto | Comentario |
 |---|---|---|
 | Autenticación de usuarios (login) y roles | Diferir | El autor es solo un nombre visible (RN-003). |
-| Edición y borrado de comentarios y respuestas | Diferir | Ver RN-009. Se tratará en F-MOD cuando exista el rol moderador. |
-| Moderación y reportes | Diferir | Requiere definir el rol moderador. |
+| Edición de comentarios y respuestas | Diferir | Ver RN-009. |
+| Borrado por moderación (F-MOD-001) | Diferir | Especificada en la sección 5 con RN-011; se habilita cuando exista una forma de reconocer al moderador. |
+| Reportes de lectores | Diferir | Depende de F-MOD-001. |
 | Likes y reacciones | Restringir | No forman parte del objetivo de la v1. |
 | Respuestas a respuestas (anidamiento) | Restringir | Ver RN-004. |
 | Texto enriquecido, emojis extendidos, imágenes, enlaces clicables | Restringir | Ver RN-008. |
@@ -317,12 +362,12 @@ Preguntas de "¿cómo lo implemento?" que surgieron al escribir la spec. No se r
 
 ## Anexo — Checklist SDD
 
-- [x] 1. Cada feature tiene un ID único (F-COM-001, F-COM-002, F-RES-001).
+- [x] 1. Cada feature tiene un ID único (F-COM-001, F-COM-002, F-RES-001, F-MOD-001).
 - [x] 2. Cada feature tiene una historia de usuario completa (Como / quiero / para).
 - [x] 3. Cada feature tiene criterios de aceptación Dado / cuando / entonces, verificables y
   sin "debería".
 - [x] 4. Las entidades del dominio están definidas (Comentario, Respuesta y sus relaciones).
-- [x] 5. Las reglas de negocio están explícitas (RN-001 a RN-010).
+- [x] 5. Las reglas de negocio están explícitas (RN-001 a RN-011).
 - [x] 6. Hay una sección de alcance con DENTRO y FUERA.
 - [x] 7. Un colega puede leer la spec y reproducir el comportamiento sin preguntar.
   *(Entrega individual: se verificó con una relectura propia, buscando dudas del tipo
@@ -338,3 +383,4 @@ Preguntas de "¿cómo lo implemento?" que surgieron al escribir la spec. No se r
 |---|---|---|
 | 1.0 | 3 | Primera versión completa sobre la plantilla del curso. |
 | 1.1 | 4 | Correcciones de la puesta en común (checklist puntos 5, 7 y 8): autor sin espacios en los extremos y con bordes aceptados (RN-003, F-COM-001 CA-6 y CA-7), saltos de línea (RN-008, F-COM-001 CA-9), mensajes (RN-010), F-RES-001 CA-3 a CA-5 reescritos. Spec anclada en `specs/001-publicar-comentarios/`. |
+| 1.2 | 4 | Desafío extra: F-MOD-001 (borrar un comentario ofensivo) especificada y diferida, regla RN-011 "solo un moderador puede borrar", glosario de "moderador" y "comentario ofensivo", alcance actualizado. |
