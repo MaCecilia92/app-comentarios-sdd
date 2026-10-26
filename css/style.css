@@ -151,6 +151,54 @@ h2 {
     line-height: 1.6;
 }
 
+.comment-actions {
+    margin-top: 10px;
+}
+
+.btn-reply,
+.btn-cancel-reply {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 0;
+}
+
+.btn-reply:hover,
+.btn-cancel-reply:hover {
+    text-decoration: underline;
+}
+
+.btn-cancel-reply {
+    color: var(--text-muted);
+    margin-left: 12px;
+}
+
+.reply-form {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.reply-form-actions {
+    display: flex;
+    align-items: center;
+}
+
+.comment-replies {
+    margin-top: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+}
+
+.comment-replies .comment-card {
+    background: var(--bg);
+}
+
 .loading {
     text-align: center;
     color: var(--text-muted);

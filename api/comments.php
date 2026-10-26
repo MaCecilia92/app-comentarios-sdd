@@ -21,6 +21,8 @@ try {
     exit;
 }
 
+ensureParentIdColumn($pdo);
+
 switch ($method) {
     case 'GET':
         getComments($pdo);
@@ -36,8 +38,15 @@ switch ($method) {
         echo json_encode(['success' => false, 'error' => 'Método no permitido']);
 }
 
+function ensureParentIdColumn($pdo) {
+    $column = $pdo->query("SHOW COLUMNS FROM comments LIKE 'parent_id'");
+    if (!$column->fetch()) {
+        $pdo->exec("ALTER TABLE comments ADD COLUMN parent_id INT NULL");
+    }
+}
+
 function getComments($pdo) {
-    $stmt = $pdo->query("SELECT id, author, content, created_at FROM comments ORDER BY created_at DESC");
+    $stmt = $pdo->query("SELECT id, author, content, parent_id, created_at FROM comments ORDER BY created_at ASC");
     $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(['success' => true, 'comments' => $comments]);
 }
@@ -53,6 +62,25 @@ function createComment($pdo) {
     
     $author = trim($input['author']);
     $content = trim($input['content']);
+    $parentId = null;
+
+    if (isset($input['parent_id']) && $input['parent_id'] !== '' && $input['parent_id'] !== null) {
+        if (!is_numeric($input['parent_id'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'ID de comentario inválido']);
+            return;
+        }
+
+        $parentId = (int) $input['parent_id'];
+        $check = $pdo->prepare("SELECT id FROM comments WHERE id = ?");
+        $check->execute([$parentId]);
+
+        if (!$check->fetch()) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'El comentario al que querés responder no existe']);
+            return;
+        }
+    }
     
     if (strlen($author) > 100 || strlen($content) > 1000) {
         http_response_code(400);
@@ -60,8 +88,8 @@ function createComment($pdo) {
         return;
     }
     
-    $stmt = $pdo->prepare("INSERT INTO comments (author, content, created_at) VALUES (?, ?, NOW())");
-    $stmt->execute([$author, $content]);
+    $stmt = $pdo->prepare("INSERT INTO comments (author, content, parent_id, created_at) VALUES (?, ?, ?, NOW())");
+    $stmt->execute([$author, $content, $parentId]);
     
     echo json_encode(['success' => true, 'id' => $pdo->lastInsertId()]);
 }
