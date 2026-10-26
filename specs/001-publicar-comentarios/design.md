@@ -1,10 +1,10 @@
 # design.md — App de Comentarios
 
 - **Feature:** `001-publicar-comentarios`
-- **Versión del documento:** 1.0
+- **Versión del documento:** 1.1
 - **Estado:** APROBADO — base del andamiaje de la Semana 5
 - **Semana:** 4 — SDD II (Spec Anchored)
-- **requirements.md de referencia:** [`requirements.md`](./requirements.md) (misma carpeta, v1.1)
+- **requirements.md de referencia:** [`requirements.md`](./requirements.md) (misma carpeta, v1.2)
 
 > **Este documento es el CÓMO.** Registra decisiones de diseño y su porqué, trazadas contra los
 > IDs del `requirements.md` (formato `F-COM-001 · CA-3` o `RN-001`).
@@ -195,7 +195,8 @@ una relación restrictiva. -->
   protegerlo con una clave fija: descartada porque inventa un rol moderador que la v1 no
   define.
 - **Justificación:** la forma más barata de cumplir una prohibición es que la operación no
-  exista. Cuando llegue F-MOD, el borrado entra con su propio requisito, su rol y su ADR.
+  exista. Cuando llegue F-MOD-001, el borrado entra con su propio requisito, su rol y su
+  verificación (ver D-10).
 - **Requisito relacionado:** RN-009 · `requirements.md` §6 (FUERA del alcance: edición y
   borrado) · §7 pendiente 8
 
@@ -221,6 +222,36 @@ una relación restrictiva. -->
 implícito; en mi requirements.md la decisión de stack quedó explícitamente pendiente (§7.1),
 así que se registró como ADR con alternativas en lugar de darla por sobreentendida. -->
 
+### D-10 — El rol moderador queda declarado en la spec; la v1 lo respeta sin login porque no expone ningún borrado, y la verificación del rol se difiere
+
+- **Contexto:** RN-011 dice que solo un moderador puede borrar, y F-MOD-001 especifica cómo,
+  pero la v1 no tiene autenticación: no hay forma de saber si quien pide un borrado es un
+  moderador. El código actual tiene un borrado sin ningún control, que cualquiera puede usar.
+  La pregunta es cómo se respeta una regla de permisos sin poder identificar a nadie.
+- **Decisión:** en la v1 el rol moderador **queda declarado en la spec** (glosario, RN-011,
+  F-MOD-001) y **la verificación del rol se difiere** a la versión que construya la
+  autenticación, a partir de la Semana 5. Mientras tanto la regla se respeta **por ausencia**:
+  la capa de aplicación no ofrece ninguna operación de borrado (D-08), así que nadie puede
+  borrar, y "solo un moderador puede borrar" se cumple sin excepciones. Cuando se habilite
+  F-MOD-001, el borrado entra **junto con** su verificación de rol, nunca antes.
+- **Alternativas consideradas:** (a) construir login y cuentas en la v1: descartada porque la
+  autenticación está FUERA del alcance del `requirements.md` y obligaría a decidir cuentas,
+  contraseñas y sesiones que ninguna feature de la v1 pide; (b) una clave fija de moderador
+  compartida, guardada en la configuración: descartada porque inventa una autenticación débil
+  que la spec no define, se filtra con facilidad y no permite saber qué moderador borró; (c)
+  mantener el borrado y solo esconder el botón a los lectores (lo que hace hoy el código):
+  descartada porque contradice F-MOD-001 · CA-4, ya que cualquiera podría borrar por fuera de
+  la interfaz; (d) que el moderador borre directamente en el almacén con las herramientas del
+  entorno local: descartada como mecanismo de la app porque deja la regla fuera del sistema y
+  sin los mensajes de F-MOD-001, aunque queda como recurso operativo de emergencia (ver
+  sección 5).
+- **Justificación:** una regla de permisos se puede cumplir de dos maneras: verificando quién
+  pide, o no ofreciendo la acción. Sin autenticación, la única forma honesta es la segunda.
+  Declarar el rol desde ahora deja claro el contrato para la versión que lo implemente, y
+  diferir la verificación evita una solución a medias que después habría que desarmar.
+- **Requisito relacionado:** RN-011, RN-009 · F-MOD-001 · CA-4 · `requirements.md` §6 (FUERA
+  del alcance: autenticación y borrado por moderación)
+
 ---
 
 ### Matriz de trazabilidad (requisito → decisión)
@@ -235,8 +266,9 @@ así que se registró como ADR con alternativas en lugar de darla por sobreenten
 | RN-006 Orden | D-04, D-06 | Sí |
 | RN-007 Lectura pública | D-09, sección 4 (sin autenticación) | Sí |
 | RN-008 Texto literal | D-05 | Sí |
-| RN-009 Inmutabilidad | D-03, D-08 | Sí |
+| RN-009 Inmutabilidad | D-03, D-08, D-10 | Sí |
 | RN-010 Mensajes | D-07 | Sí |
+| RN-011 Borrado solo por moderador | D-08, D-10 | Sí (por ausencia de borrado en la v1) |
 | F-COM-001 · CA-1 | D-06, D-07 | Sí |
 | F-COM-001 · CA-2, CA-7 | D-02 | Sí |
 | F-COM-001 · CA-3, CA-4, CA-5, CA-6 | D-01, D-02, D-07 | Sí |
@@ -250,9 +282,12 @@ así que se registró como ADR con alternativas en lugar de darla por sobreenten
 | F-RES-001 · CA-3 | D-01, D-07 | Sí |
 | F-RES-001 · CA-4 | D-03 | Sí |
 | F-RES-001 · CA-5 | D-03, D-07 | Sí |
+| F-MOD-001 · CA-4 | D-08, D-10 | Sí: nadie puede borrar en la v1 |
+| F-MOD-001 · CA-1, CA-2, CA-3, CA-5 | D-10 | Diferidos: la feature está fuera del alcance de la v1 |
 
-**Lectura de la matriz:** las diez reglas de negocio tienen al menos una decisión que las
-sostiene. Los criterios sin decisión son de pura interfaz (abrir, cerrar o cancelar un
+**Lectura de la matriz:** las once reglas de negocio tienen al menos una decisión que las
+sostiene. F-MOD-001 está especificada pero diferida: su único criterio vigente en la v1 (CA-4,
+nadie sin permiso puede borrar) se cumple por D-08 y D-10. Los criterios sin decisión son de pura interfaz (abrir, cerrar o cancelar un
 formulario, el texto del estado vacío): se implementan tal como dice el `requirements.md`, sin
 nada que decidir. Ninguna decisión de este documento queda sin requisito.
 
@@ -348,6 +383,20 @@ Semana 5, no se inventa.
   pone los textos en el servidor, pero la cortesía de D-01 necesita los mismos textos en la
   interfaz antes de enviar. Si se escriben dos veces, pueden divergir; hay que decidir cómo se
   mantienen sincronizados.
+- **¿Cómo se va a reconocer a un moderador?** D-10 difiere la verificación del rol, pero no
+  dice con qué: cuentas con contraseña, un listado de moderadores definido por el
+  administrador, u otro mecanismo. La elección depende de cómo se defina la autenticación, que
+  todavía no tiene feature propia.
+- **¿Qué pasa con las respuestas al borrar un comentario?** F-MOD-001 · CA-1 dice que dejan de
+  mostrarse, pero D-03 declaró la relación restrictiva justamente para que nada se borre en
+  silencio. Hay que decidir si el borrado de un comentario borra también sus respuestas (y
+  cómo se registra) o si se marca como oculto sin eliminar los datos (borrado lógico).
+- **¿Hace falta registrar quién borró y cuándo?** F-MOD-001 no pide un historial visible, pero
+  sin un registro interno no se puede revisar una moderación injusta.
+- **Mientras F-MOD-001 esté diferida, ¿cómo se saca un comentario ofensivo urgente?** La única
+  vía sería borrarlo directo en el almacén con las herramientas del entorno local (alternativa
+  d de D-10). Hay que decidir si eso se acepta como procedimiento de emergencia y quién puede
+  hacerlo.
 - **¿Se restringe el origen de las peticiones?** El servidor actual acepta peticiones desde
   cualquier origen. Ningún requisito lo pide ni lo prohíbe, pero junto con D-08 conviene
   decidir si la capa de aplicación solo atiende a la propia interfaz.
