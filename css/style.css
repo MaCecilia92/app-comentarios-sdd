@@ -117,6 +117,42 @@ h2 {
     font-size: 0.9rem;
 }
 
+.comments-toolbar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.search-group {
+    flex: 2;
+    min-width: 200px;
+    margin-bottom: 0;
+}
+
+.sort-group {
+    flex: 1;
+    min-width: 160px;
+    margin-bottom: 0;
+}
+
+.comments-toolbar select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--bg-card);
+    color: var(--text);
+    transition: border-color 0.2s;
+}
+
+.comments-toolbar select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
 .comment-card {
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -149,6 +185,84 @@ h2 {
 .comment-content {
     color: var(--text);
     line-height: 1.6;
+}
+
+.comment-actions {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-reply,
+.btn-cancel-reply {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 0;
+}
+
+.btn-reply:hover,
+.btn-cancel-reply:hover {
+    text-decoration: underline;
+}
+
+.btn-cancel-reply {
+    color: var(--text-muted);
+    margin-left: 12px;
+}
+
+.btn-like {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.btn-like:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-like.liked {
+    background: #F3EEFD;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-like:disabled {
+    cursor: default;
+}
+
+.reply-form {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.reply-form-actions {
+    display: flex;
+    align-items: center;
+}
+
+.comment-replies {
+    margin-top: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+}
+
+.comment-replies .comment-card {
+    background: var(--bg);
 }
 
 .loading {

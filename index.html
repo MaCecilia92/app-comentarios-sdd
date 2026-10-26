@@ -31,6 +31,19 @@
 
             <section class="comments-list">
                 <h2>Comentarios <span id="commentCount">(0)</span></h2>
+                <div class="comments-toolbar">
+                    <div class="form-group search-group">
+                        <label for="searchInput">Buscar:</label>
+                        <input type="text" id="searchInput" placeholder="Buscar por autor o contenido...">
+                    </div>
+                    <div class="form-group sort-group">
+                        <label for="sortSelect">Ordenar:</label>
+                        <select id="sortSelect">
+                            <option value="desc">Más recientes primero</option>
+                            <option value="asc">Más antiguos primero</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="commentsContainer">
                     <p class="loading">Cargando comentarios...</p>
                 </div>
