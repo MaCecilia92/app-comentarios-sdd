@@ -1,12 +1,13 @@
 # requirements.md — App de Comentarios
 
 - **Nombre del proyecto:** App de Comentarios
-- **Versión del documento:** 1.0
-- **Estado:** COMPLETO — listo para revisión en Semana 4
-- **Semana:** 3 — SDD I (Spec First)
+- **Feature:** `001-publicar-comentarios`
+- **Versión del documento:** 1.1
+- **Estado:** APROBADO — base del [`design.md`](./design.md)
+- **Semana:** 3 — SDD I (Spec First), anclado en Semana 4
 
 > **Nota:** este es el documento de especificación (el QUÉ).
-> No contiene código, arquitectura ni decisiones técnicas: eso es `architect.md` (Semana 4).
+> No contiene código, arquitectura ni decisiones técnicas: eso es [`design.md`](./design.md).
 > Todo lo que despierta un "¿cómo lo implemento?" está anotado en la sección 7.
 
 ---
@@ -81,8 +82,13 @@ cuenta. -->
 - **RN-002 — Validez.** Nunca se guarda un comentario ni una respuesta cuyo contenido o autor
   esté vacío o tenga solo espacios.
 - **RN-003 — Autoría y fecha.** Todo comentario y toda respuesta registra el nombre de autor
-  escrito en el formulario (2 a 100 caracteres) y la fecha y hora de su publicación. El autor
-  nunca se infiere del dispositivo ni del navegador.
+  escrito en el formulario (2 a 100 caracteres, sin contar los espacios al principio y al
+  final, que no se guardan) y la fecha y hora de su publicación. El autor nunca se infiere del
+  dispositivo ni del navegador.
+
+<!-- corregido por: puesta en común (checklist punto 8). Para el contenido se aclaraba que
+los espacios de los extremos no cuentan, pero para el autor no: "  Ana  " quedaba ambiguo. -->
+
 - **RN-004 — Estructura de 1 nivel.** Solo se puede responder a un comentario. Nunca se
   responde a una respuesta.
 - **RN-005 — Padre existente.** Una respuesta solo se guarda si su comentario padre existe en
@@ -93,9 +99,20 @@ cuenta. -->
 - **RN-007 — Lectura pública.** Cualquier lector puede leer todos los comentarios y
   respuestas, sin registrarse.
 - **RN-008 — Texto literal.** El autor y el contenido se muestran exactamente como fueron
-  escritos: ningún texto ingresado se interpreta como formato, enlace o código.
+  escritos, conservando los saltos de línea del contenido: ningún texto ingresado se
+  interpreta como formato, enlace o código.
 - **RN-009 — Inmutabilidad en v1.** Una vez publicado, un comentario o respuesta no se edita
   ni se borra desde la app.
+- **RN-010 — Mensajes.** Todo mensaje de éxito o de error se muestra junto al formulario que
+  lo originó (el de nuevo comentario o el de respuesta). Los mensajes de éxito desaparecen a
+  los 3 segundos; los de error permanecen hasta el siguiente envío o hasta que se cierra ese
+  formulario.
+
+<!-- corregido por: puesta en común (checklist punto 8). Los saltos de línea estaban en
+"Pendientes para Semana 4", pero si un texto de dos párrafos se ve en dos párrafos es
+comportamiento observable (QUÉ), no una decisión técnica: se movió a RN-008. También se
+agregó RN-010: no estaba definido dónde ni por cuánto tiempo se ven los mensajes. -->
+
 
 <!-- corregido por: inconsistencia del material. Las diapositivas 8 y 10 dicen "1 a 500
 caracteres" y la lectura y la plantilla dicen "3 a 500". Se adopta 3 a 500 (RN-001) y se
@@ -110,7 +127,7 @@ aplica a comentarios y respuestas por igual. -->
 **Historia de usuario:** Como lector, quiero publicar un comentario con mi nombre, para
 compartir mi opinión con los demás lectores.
 
-**Reglas que aplica:** RN-001, RN-002, RN-003, RN-008.
+**Reglas que aplica:** RN-001, RN-002, RN-003, RN-008, RN-010.
 
 **Criterios de aceptación:**
 
@@ -130,14 +147,23 @@ compartir mi opinión con los demás lectores.
 - **CA-5. Vacío o solo espacios.** Dado que el contenido o el autor está vacío o tiene solo
   espacios, cuando presiono "Publicar", entonces se muestra el mensaje "Completá tu nombre y
   tu comentario" y no se guarda nada.
-- **CA-6. Autor fuera de rango.** Dado que el autor tiene 1 carácter o más de 100, cuando
-  presiono "Publicar", entonces se muestra el mensaje "El nombre debe tener entre 2 y 100
-  caracteres" y no se guarda nada.
-- **CA-7. Espacios en los extremos.** Dado que el contenido es "   Hola mundo   ", cuando
-  presiono "Publicar", entonces se guarda y se muestra como "Hola mundo".
+- **CA-6. Bordes del autor.** Dado que el autor tiene exactamente 2 o exactamente 100
+  caracteres, cuando presiono "Publicar", entonces el comentario se guarda; y dado que tiene
+  1 carácter o 101 o más, cuando presiono "Publicar", entonces se muestra el mensaje "El
+  nombre debe tener entre 2 y 100 caracteres" y no se guarda nada.
+- **CA-7. Espacios en los extremos.** Dado que el autor es "  Ana  " y el contenido es
+  "   Hola mundo   ", cuando presiono "Publicar", entonces se guarda y se muestra con autor
+  "Ana" y contenido "Hola mundo".
 - **CA-8. Texto literal.** Dado que el contenido incluye texto con forma de etiqueta o
   código (por ejemplo, la palabra "negrita" encerrada entre los símbolos < y >), cuando se
   publica, entonces se muestra tal cual fue escrito, sin aplicar ningún formato.
+- **CA-9. Saltos de línea.** Dado que el contenido tiene dos párrafos separados por un salto
+  de línea, cuando se publica, entonces se muestra en dos párrafos, igual que se escribió.
+
+<!-- corregido por: puesta en común (checklist punto 5). Solo existían los rechazos del autor
+(1 y 101 caracteres); faltaba el borde aceptado (2 y 100), como sí estaba para el contenido
+(500). -->
+
 
 **Fuera de alcance de esta feature:** edición y borrado de comentarios (F-MOD, versión
 futura), likes y reacciones, formato de texto enriquecido, adjuntar imágenes o enlaces
@@ -186,7 +212,7 @@ la página para verlo).
 **Historia de usuario:** Como lector, quiero responder a un comentario existente, para
 aportar sobre lo que dijo otra persona sin abrir una conversación nueva.
 
-**Reglas que aplica:** RN-001, RN-002, RN-003, RN-004, RN-005, RN-006, RN-008.
+**Reglas que aplica:** RN-001, RN-002, RN-003, RN-004, RN-005, RN-006, RN-008, RN-010.
 
 **Criterios de aceptación:**
 
@@ -198,16 +224,26 @@ aportar sobre lo que dijo otra persona sin abrir una conversación nueva.
   respuesta", entonces la respuesta se guarda, aparece debajo de su comentario padre como la
   última de sus respuestas, se muestra el mensaje "Respuesta publicada correctamente" y el
   formulario de respuesta se cierra.
-- **CA-3. Contenido inválido.** Dado que el contenido de la respuesta está vacío, tiene solo
-  espacios, tiene menos de 3 caracteres o más de 500, cuando presiono "Publicar respuesta",
-  entonces se muestra el mismo mensaje que corresponde en F-COM-001 (CA-3, CA-4 o CA-5),
-  junto al formulario de respuesta, no se guarda nada y el formulario queda abierto con el
-  texto escrito.
-- **CA-4. Un solo nivel.** Dado que la lista muestra una respuesta, cuando la miro, entonces
-  esa respuesta no tiene botón "Responder": solo los comentarios lo tienen.
-- **CA-5. Padre inexistente.** Dado que el comentario padre dejó de existir mientras escribía
-  la respuesta, cuando presiono "Publicar respuesta", entonces se muestra el mensaje "El
-  comentario al que querés responder no existe" y no se guarda nada.
+- **CA-3. Datos inválidos.** Dado que el formulario de respuesta está abierto, cuando presiono
+  "Publicar respuesta" con datos inválidos, entonces no se guarda nada, el formulario queda
+  abierto con lo escrito y junto a él se muestra:
+  - contenido o autor vacío o solo con espacios → "Completá tu nombre y tu respuesta";
+  - contenido de 1 o 2 caracteres → "La respuesta debe tener al menos 3 caracteres";
+  - contenido de 501 caracteres o más → "La respuesta no puede superar los 500 caracteres";
+  - autor de 1 carácter o de 101 o más → "El nombre debe tener entre 2 y 100 caracteres".
+- **CA-4. Un solo nivel.** Dado que la lista muestra comentarios con respuestas, cuando se
+  muestra la lista, entonces las respuestas no tienen botón "Responder": solo los comentarios
+  lo tienen.
+- **CA-5. Padre inexistente.** Dado que se intenta publicar una respuesta para un comentario
+  que no existe, cuando se envía, entonces se muestra el mensaje "El comentario al que querés
+  responder no existe" y no se guarda nada.
+
+<!-- corregido por: puesta en común (checklist punto 7). El CA-5 decía "el comentario padre
+dejó de existir mientras escribía", pero RN-009 establece que en la v1 nada se borra: se
+reformuló sin suponer un borrado. El CA-3 no cubría el autor inválido y reutilizaba mensajes
+que decían "comentario" para una respuesta; ahora cada caso tiene su mensaje. El CA-4 tenía
+una acción débil ("cuando la miro"). -->
+
 - **CA-6. Cancelar.** Dado que el formulario de respuesta está abierto con texto escrito,
   cuando presiono "Cancelar", entonces el formulario se cierra, no se guarda nada y el
   comentario queda como estaba.
@@ -253,12 +289,12 @@ en el contador general.
 
 ---
 
-## 7. Pendientes para Semana 4 (architect.md)
+## 7. Pendientes para Semana 4 (design.md)
 
 Preguntas de "¿cómo lo implemento?" que surgieron al escribir la spec. No se resuelven acá.
 
 1. **Stack y entorno.** La app actual corre localmente en PHP + MySQL sobre XAMPP. Decidir
-   si se mantiene y documentarlo en architect.md (se sacó del contexto, ver sección 1).
+   si se mantiene y documentarlo en design.md (se sacó del contexto, ver sección 1).
 2. **Modelo de datos de Respuesta.** ¿Se guarda como entidad propia o como un comentario con
    comentario padre? ¿Qué pasa con las respuestas si en el futuro se borra el padre?
 3. **Dónde se valida.** RN-001 a RN-005 tienen que cumplirse aunque alguien publique sin usar
@@ -269,7 +305,7 @@ Preguntas de "¿cómo lo implemento?" que surgieron al escribir la spec. No se r
    cuando dos publicaciones tienen la misma fecha y hora.
 6. **Fecha y hora.** Zona horaria y formato de visualización.
 7. **Texto literal (RN-008).** Cómo se evita que el texto ingresado se interprete como código
-   y si se conservan los saltos de línea.
+   y cómo se conservan los saltos de línea al mostrarlo.
 8. **Diferencias con el código actual de `main`** que la implementación tendrá que corregir:
    - el contenido acepta de 1 a 1000 caracteres (la spec dice 3 a 500);
    - un nombre con solo espacios puede llegar a guardarse vacío (contradice RN-002);
@@ -286,10 +322,19 @@ Preguntas de "¿cómo lo implemento?" que surgieron al escribir la spec. No se r
 - [x] 3. Cada feature tiene criterios de aceptación Dado / cuando / entonces, verificables y
   sin "debería".
 - [x] 4. Las entidades del dominio están definidas (Comentario, Respuesta y sus relaciones).
-- [x] 5. Las reglas de negocio están explícitas (RN-001 a RN-009).
+- [x] 5. Las reglas de negocio están explícitas (RN-001 a RN-010).
 - [x] 6. Hay una sección de alcance con DENTRO y FUERA.
 - [x] 7. Un colega puede leer la spec y reproducir el comportamiento sin preguntar.
   *(Entrega individual: se verificó con una relectura propia, buscando dudas del tipo
   "¿y si el texto supera el límite?" o "¿de dónde sale el autor?"; cada una tiene respuesta
   en un criterio o una regla.)*
 - [x] 8. La spec no contiene código de implementación.
+
+---
+
+## Historial de cambios
+
+| Versión | Semana | Cambio |
+|---|---|---|
+| 1.0 | 3 | Primera versión completa sobre la plantilla del curso. |
+| 1.1 | 4 | Correcciones de la puesta en común (checklist puntos 5, 7 y 8): autor sin espacios en los extremos y con bordes aceptados (RN-003, F-COM-001 CA-6 y CA-7), saltos de línea (RN-008, F-COM-001 CA-9), mensajes (RN-010), F-RES-001 CA-3 a CA-5 reescritos. Spec anclada en `specs/001-publicar-comentarios/`. |
