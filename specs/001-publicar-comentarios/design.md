@@ -1,7 +1,7 @@
 # design.md — App de Comentarios
 
 - **Feature:** `001-publicar-comentarios`
-- **Versión del documento:** 1.1
+- **Versión del documento:** 1.2
 - **Estado:** APROBADO — base del andamiaje de la Semana 5
 - **Semana:** 4 — SDD II (Spec Anchored)
 - **requirements.md de referencia:** [`requirements.md`](./requirements.md) (misma carpeta, v1.2)
@@ -59,6 +59,10 @@ cambio de tecnología. -->
   cierta con un segundo cliente; la de la interfaz queda como mejora de experiencia.
 - **Requisito relacionado:** F-COM-001 · CA-3, CA-4, CA-5, CA-6 · F-RES-001 · CA-3 · RN-001,
   RN-002, RN-003
+
+> **Modificada por D-13 (Semana 5):** en la v1 la interfaz ya **no** anticipa la validación;
+> la validación en la capa de aplicación sigue igual. Se conserva el texto original de D-01
+> para no reescribir la historia de la decisión.
 
 ### D-02 — La longitud se mide en caracteres, después de recortar los espacios de los extremos
 
@@ -252,6 +256,70 @@ así que se registró como ADR con alternativas en lugar de darla por sobreenten
 - **Requisito relacionado:** RN-011, RN-009 · F-MOD-001 · CA-4 · `requirements.md` §6 (FUERA
   del alcance: autenticación y borrado por moderación)
 
+<!-- D-11 a D-13 se agregaron en la Semana 5, al revisar el plan del andamiaje: resuelven las
+dudas 4, 2 y 5 de la sección 5, que se habían decidido en la sesión de Plan Mode pero quedaban
+escritas solo en el plan. -->
+
+### D-11 — La base se regenera desde el esquema nuevo, sin migrar los datos existentes
+
+- **Contexto:** la base del proyecto base tiene una sola colección, sin respuestas, y sus tres
+  comentarios de ejemplo comparten fecha y hora. En los intentos de la Semana 1 hubo bases con
+  columnas que esta spec no reconoce. D-03 exige dos colecciones con integridad referencial.
+- **Decisión:** el script de esquema **borra la base existente y la crea de nuevo** con las dos
+  colecciones de D-03. La base nueva arranca **vacía**, sin datos de ejemplo. El encabezado del
+  script advierte que es destructivo.
+- **Alternativas consideradas:** (a) migrar la base existente con un script de cambios:
+  descartada porque obliga a contemplar las variantes de esquema que dejaron los intentos de la
+  Semana 1, para conservar tres comentarios de ejemplo sin valor; (b) regenerar pero cargar
+  datos de ejemplo: descartada porque los ejemplos actuales comparten fecha y hora, y una base
+  vacía permite verificar desde el primer momento el estado vacío de F-COM-002 · CA-3.
+- **Justificación:** no hay datos reales que preservar, y un único script que crea todo desde
+  cero es más fácil de verificar que una migración. Si en el futuro hay datos que conservar,
+  los cambios de esquema irán como migraciones versionadas (design.md §3, "Esquema y
+  migraciones").
+- **Requisito relacionado:** D-03 · F-COM-002 · CA-3 · `requirements.md` §7 pendiente 8
+
+### D-12 — La fecha y hora se guardan en UTC y la interfaz las muestra en la hora local del lector
+
+- **Contexto:** RN-003 exige registrar la fecha y hora de cada publicación, y D-04 las usa para
+  ordenar. La spec no decía en qué zona horaria se guardan ni cómo se muestran.
+- **Decisión:** la capa de aplicación registra el instante de publicación en **UTC**,
+  independientemente de la zona del servidor. La interfaz lo convierte a la **hora local del
+  lector** al mostrarlo.
+- **Alternativas consideradas:** (a) guardar en la hora local del servidor: descartada porque
+  el resultado depende de la configuración del entorno y cambia si la base se mueve a otra
+  máquina; (b) mostrar siempre la hora de Argentina: descartada porque un lector en otra zona
+  vería una hora que no es la suya, y la spec no fija una zona.
+- **Justificación:** una referencia única hace que el orden de D-04 no dependa del entorno, y
+  convertir solo al mostrar mantiene el dato guardado sin ambigüedad.
+- **Requisito relacionado:** RN-003 · RN-006 · F-COM-001 · CA-1 · F-COM-002 · CA-1, CA-2 ·
+  `requirements.md` §7 pendiente 6
+
+### D-13 — Los textos de los mensajes viven solo en la capa de aplicación; en la v1 la interfaz no anticipa la validación (modifica D-01)
+
+- **Contexto:** D-01 permitía que la interfaz anticipara la validación como cortesía, y D-07
+  pone los textos exactos de los mensajes en la capa de aplicación. Para anticipar con el texto
+  de la spec (RN-010), la interfaz necesitaría una copia de esos textos, que puede divergir.
+  Anticipar sin textos tampoco sirve: no habría mensaje que cumpla RN-010. Esto incluye la
+  validación nativa del navegador (campos obligatorios), que muestra textos propios del
+  navegador.
+- **Decisión:** en la v1 la interfaz **no valida nada antes de enviar**: no anticipa reglas y
+  no usa la validación nativa del navegador. Envía siempre y muestra el motivo que devuelve la
+  capa de aplicación, junto al formulario que lo originó (D-07). Los textos existen en un solo
+  lugar. D-01 queda modificada en su parte de cortesía; la validación en el servidor no cambia.
+  Única excepción: cuando la capa de aplicación **no responde**, la interfaz muestra el mensaje
+  de error de carga de F-COM-002 · CA-6, porque en ese caso no hay ningún motivo que recibir.
+- **Alternativas consideradas:** (a) copiar los textos en la interfaz: descartada porque dos
+  copias del mismo texto terminan divergiendo; (b) que la interfaz pida el catálogo de textos
+  al servidor al cargar: descartada porque agrega una cuarta operación que la spec no pide
+  (D-08 fija tres); (c) anticipar sin textos propios o con los del navegador: descartada porque
+  contradice RN-010.
+- **Justificación:** el costo es un viaje al servidor para errores evidentes como el campo
+  vacío, irrelevante en un entorno local. A cambio, cada mensaje que ve el lector es
+  exactamente el de la spec y sale del mismo lugar que la regla que lo produce.
+- **Requisito relacionado:** RN-010 · D-01 · D-07 · F-COM-001 · CA-3, CA-4, CA-5, CA-6 ·
+  F-RES-001 · CA-3
+
 ---
 
 ### Matriz de trazabilidad (requisito → decisión)
@@ -260,26 +328,26 @@ así que se registró como ADR con alternativas en lugar de darla por sobreenten
 |---|---|---|
 | RN-001 Límite de contenido | D-01, D-02 | Sí |
 | RN-002 Validez (no vacío) | D-01, D-02 | Sí |
-| RN-003 Autoría y fecha | D-01, D-02 | Sí (fecha y hora: ver duda 2) |
+| RN-003 Autoría y fecha | D-01, D-02, D-12 | Sí |
 | RN-004 Un solo nivel | D-03 | Sí |
 | RN-005 Padre existente | D-03 | Sí |
 | RN-006 Orden | D-04, D-06 | Sí |
 | RN-007 Lectura pública | D-09, sección 4 (sin autenticación) | Sí |
 | RN-008 Texto literal | D-05 | Sí |
 | RN-009 Inmutabilidad | D-03, D-08, D-10 | Sí |
-| RN-010 Mensajes | D-07 | Sí |
+| RN-010 Mensajes | D-07, D-13 | Sí |
 | RN-011 Borrado solo por moderador | D-08, D-10 | Sí (por ausencia de borrado en la v1) |
-| F-COM-001 · CA-1 | D-06, D-07 | Sí |
+| F-COM-001 · CA-1 | D-06, D-07, D-12 | Sí |
 | F-COM-001 · CA-2, CA-7 | D-02 | Sí |
-| F-COM-001 · CA-3, CA-4, CA-5, CA-6 | D-01, D-02, D-07 | Sí |
+| F-COM-001 · CA-3, CA-4, CA-5, CA-6 | D-01, D-02, D-07, D-13 | Sí |
 | F-COM-001 · CA-8, CA-9 | D-05 | Sí |
-| F-COM-002 · CA-1, CA-2 | D-04, D-05 | Sí |
-| F-COM-002 · CA-3 | — | Comportamiento de la interfaz, sin decisión técnica |
+| F-COM-002 · CA-1, CA-2 | D-04, D-05, D-12 | Sí |
+| F-COM-002 · CA-3 | D-11 (base vacía para verificarlo) | Sí |
 | F-COM-002 · CA-4, CA-5 | D-06 | Sí |
 | F-COM-002 · CA-6 | D-07 | Sí |
 | F-RES-001 · CA-1, CA-6, CA-7 | — | Comportamiento de la interfaz, sin decisión técnica |
 | F-RES-001 · CA-2 | D-03, D-04, D-06 | Sí |
-| F-RES-001 · CA-3 | D-01, D-07 | Sí |
+| F-RES-001 · CA-3 | D-01, D-07, D-13 | Sí |
 | F-RES-001 · CA-4 | D-03 | Sí |
 | F-RES-001 · CA-5 | D-03, D-07 | Sí |
 | F-MOD-001 · CA-4 | D-08, D-10 | Sí: nadie puede borrar en la v1 |
@@ -300,8 +368,9 @@ implementar.
 
 - **Interfaz de conversación** — muestra la lista con su contador, el formulario de nuevo
   comentario, el formulario de respuesta de cada comentario y los mensajes junto a cada
-  formulario. No decide reglas: anticipa las validaciones como cortesía (D-01), envía, muestra
-  el motivo que devuelve el servidor (D-07) y vuelve a pedir la conversación (D-06). Zona del
+  formulario. No decide reglas ni anticipa validaciones (D-13): envía, muestra el motivo que
+  devuelve el servidor (D-07), muestra la fecha y hora en la hora local del lector (D-12) y
+  vuelve a pedir la conversación (D-06). Zona del
   `requirements.md`: F-COM-001, F-COM-002, F-RES-001 (todos sus criterios de interfaz).
 - **Punto de entrada de la capa de aplicación** — recibe las tres operaciones (publicar
   comentario, publicar respuesta, obtener conversación), rechaza cualquier otra (D-08) y
@@ -363,26 +432,17 @@ Enfoques evaluados y descartados para esta versión, con su motivo.
 Lo que no se pudo resolver con la información disponible. Se registra para retomarlo en la
 Semana 5, no se inventa.
 
+> **Resueltas en la Semana 5:** la zona horaria (D-12), la migración de la base actual (D-11) y
+> dónde viven los textos de los mensajes (D-13) dejaron de ser dudas y se registraron como ADR.
+
 - **¿Cómo se cuenta un emoji compuesto?** D-02 mide en caracteres, pero algunos emojis (una
   familia, una bandera, un tono de piel) se componen de varios caracteres Unicode y se ven como
   uno solo. El glosario dice que "un emoji cuenta como uno", y medir lo que el lector percibe
   como un símbolo es más costoso que contar caracteres Unicode. Hay que decidir cuál de las dos
   mediciones vale, y si se aplica igual en la interfaz y en el servidor.
-- **¿En qué zona horaria se registra y se muestra la fecha y hora?** RN-003 exige registrarla,
-  pero no dice si el instante se guarda en la hora del servidor o en una referencia universal,
-  ni con qué formato se muestra. En el entorno local no se nota; en el desempate de D-04 y al
-  compartir la base, sí.
 - **¿Qué pasa con un doble clic en "Publicar"?** Si el lector envía dos veces el mismo
   formulario antes de recibir respuesta, hoy se guardarían dos comentarios idénticos. La spec
   no dice si eso es un duplicado a evitar o dos publicaciones válidas.
-- **¿Cómo se migra la base actual?** La base del proyecto base no tiene respuestas y sus tres
-  comentarios de ejemplo comparten fecha y hora; además, en los intentos de la Semana 1 hubo
-  bases con columnas que esta spec no reconoce. Hay que decidir si se regenera la base desde el
-  esquema nuevo o si se migra la existente.
-- **¿Dónde viven los textos de los mensajes para la validación anticipada de la interfaz?** D-07
-  pone los textos en el servidor, pero la cortesía de D-01 necesita los mismos textos en la
-  interfaz antes de enviar. Si se escriben dos veces, pueden divergir; hay que decidir cómo se
-  mantienen sincronizados.
 - **¿Cómo se va a reconocer a un moderador?** D-10 difiere la verificación del rol, pero no
   dice con qué: cuentas con contraseña, un listado de moderadores definido por el
   administrador, u otro mecanismo. La elección depende de cómo se defina la autenticación, que

@@ -17,7 +17,7 @@ antes de decidir; no completes con suposiciones.
 
 ## Reglas
 
-1. Validá toda regla de negocio en el servidor antes de cualquier escritura; la validación del navegador es solo un aviso anticipado, nunca la barrera. (origen: D-01 · RN-001, RN-002, RN-003)
+1. Validá toda regla de negocio en el servidor antes de cualquier escritura. En la v1 el navegador no valida nada antes de enviar (tampoco con la validación nativa de los campos): envía y muestra el motivo que devuelve el servidor. (origen: D-01, D-13 · RN-001, RN-002, RN-003, RN-010)
 2. Recortá los espacios al principio y al final del autor y del contenido antes de validar, y medí la longitud en caracteres, no en bytes: contenido 3 a 500, autor 2 a 100. (origen: D-02 · RN-001, RN-003)
 3. Modelá comentario y respuesta como dos entidades: una respuesta siempre referencia un comentario existente y nunca otra respuesta. (origen: D-03 · RN-004, RN-005)
 4. Entregá la conversación ya ordenada desde el servidor: comentarios del más nuevo al más viejo, respuestas del más viejo al más nuevo, con el identificador como desempate. La interfaz no reordena. (origen: D-04 · RN-006)
