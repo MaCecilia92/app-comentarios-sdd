@@ -38,7 +38,19 @@ El archivo está en la raíz del repo, versionado. Resumen de las reglas con su 
 
 ## 3. Prompt de Plan Mode
 
-Antes del encargo hice el test de trazabilidad en la misma sesión del plan, con el prompt: "Antes de proponer nada, decime qué reglas vas a aplicar y de dónde sale cada una." Después le pasé este encargo:
+Antes del encargo hice el test de trazabilidad en la misma sesión del plan, con el prompt: "Antes de proponer nada, decime qué reglas vas a aplicar y de dónde sale cada una."
+
+**Resultado del test:** la sesión era nueva y yo no le mostré las reglas, así que las tomó solo de los archivos del repo (el `CLAUDE.md` importa el `AGENTS.md`). Respondió:
+
+- Que las reglas salen del `AGENTS.md` de la raíz y del de `api/` "cuando trabaje dentro de `api/`": reconoció la regla acotada por directorio.
+- Que el QUÉ está en `requirements.md` y el CÓMO en `design.md`, y que si el código y la spec no coinciden "manda la spec".
+- Las 10 reglas generales y las 7 de `api/`, cada una con su origen correcto (por ejemplo, "D-04 · RN-006" para el orden y "D-08 · RN-009, RN-011" para las tres operaciones). No inventó ninguna regla ni ningún origen.
+- La lista completa de lo que no va a hacer, incluida "Dudas de design.md §5: no las resuelvo por mi cuenta; te pregunto".
+- Cómo cierra cada tarea: qué criterios cubre (por ejemplo, F-COM-001 · CA-3) y cuáles no pudo verificar.
+
+Un detalle confirma que leyó el archivo y no improvisó: citó la regla 1 como "la validación del navegador es solo un aviso anticipado", que era el texto vigente en ese momento. Esa regla cambió después, por la corrección 2 (D-13).
+
+Después le pasé este encargo:
 
 ```
 Leé specs/001-publicar-comentarios/requirements.md y specs/001-publicar-comentarios/design.md, y respetá el AGENTS.md de la raíz y el de api/.
