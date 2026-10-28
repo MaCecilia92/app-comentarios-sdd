@@ -47,8 +47,11 @@ sql/schema.sql
 
 ### 4. Probar que la app funcione
 
-Abrí `http://localhost/app-comentarios/index.html` en tu navegador.
-Deberías ver el formulario y la lista de comentarios con 3 ejemplos precargados.
+Abrí `http://localhost:8080/app-comentarios-sdd/index.html` en tu navegador.
+
+> **Estado (Semana 5):** el proyecto tiene el andamiaje de los módulos de
+> `specs/001-publicar-comentarios/design.md`, sin lógica todavía. La página carga, pero la
+> lista no se muestra hasta que se implemente el comportamiento. La base arranca vacía.
 
 ---
 
@@ -57,7 +60,7 @@ Deberías ver el formulario y la lista de comentarios con 3 ejemplos precargados
 | Capa | Tecnología |
 |---|---|
 | Frontend | HTML5 + CSS nativo + JavaScript vanilla (`fetch`) |
-| Backend | PHP 8 (`api/comments.php` — API REST) |
+| Backend | PHP 8 (`api/conversacion.php` — único punto de entrada: publicar comentario, publicar respuesta y obtener la conversación) |
 | Base de datos | MySQL 8 (`sql/schema.sql`) |
 | Estructura | `api/` + `css/` + `js/` + `sql/` |
 
@@ -69,16 +72,26 @@ Deberías ver el formulario y la lista de comentarios con 3 ejemplos precargados
 
 ```
 app-comentarios/
-├── index.html          → página principal (formulario + lista)
-├── config.php          → credenciales de la base de datos
+├── AGENTS.md                      → reglas del proyecto para agentes de IA
+├── index.html                     → página principal (formulario + lista)
+├── config.php                     → credenciales de la base de datos
+├── specs/001-publicar-comentarios/
+│   ├── requirements.md            → el QUÉ (features, criterios, reglas)
+│   └── design.md                  → el CÓMO (decisiones D-xx, módulos)
 ├── api/
-│   └── comments.php    → API REST de comentarios (GET/POST/DELETE)
+│   ├── AGENTS.md                  → reglas acotadas a la capa de aplicación
+│   ├── conversacion.php           → punto de entrada (3 operaciones)
+│   ├── validacion.php             → único punto de validación
+│   ├── publicacion_comentario.php → publicación de comentarios
+│   ├── publicacion_respuesta.php  → publicación de respuestas
+│   ├── consulta_conversacion.php  → consulta ordenada (solo lectura)
+│   └── acceso_datos.php           → acceso a la base (consultas preparadas)
 ├── css/
-│   └── style.css       → estilos nativos, variables CSS
+│   └── style.css                  → estilos nativos, variables CSS
 ├── js/
-│   └── app.js          → lógica de frontend (fetch + render)
+│   └── conversacion.js            → interfaz de conversación
 └── sql/
-    └── schema.sql      → crear BD, tabla e insertar datos de ejemplo
+    └── schema.sql                 → crea la base vacía (comentario + respuesta)
 ```
 
 ---

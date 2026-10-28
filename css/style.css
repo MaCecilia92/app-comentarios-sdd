@@ -1,3 +1,13 @@
+/*
+ * Módulo: Interfaz de conversación (estilos)
+ * Responsabilidad: estilos nativos de la página, con variables CSS.
+ * Decisiones: D-08, D-09
+ * Requisitos: RN-010 (mensajes junto a su formulario)
+ * Fronteras: solo lo usa index.html.
+ * Estado: estilos del proyecto base, sin la regla de borrado (D-08). Las clases se revisan
+ *   cuando se implemente la interfaz de respuestas.
+ */
+
 * {
     margin: 0;
     padding: 0;
@@ -161,21 +171,6 @@ h2 {
     text-align: center;
     color: var(--text-muted);
     padding: 40px 20px;
-}
-
-.btn-delete {
-    background: none;
-    border: none;
-    color: var(--danger);
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.btn-delete:hover {
-    background: #FEE2E2;
 }
 
 footer {

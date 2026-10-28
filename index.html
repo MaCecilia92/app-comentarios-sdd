@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<!--
+  Módulo: Interfaz de conversación (página)
+  Responsabilidad: estructura de la página: formulario de nuevo comentario con su zona de
+    mensajes, y la lista de comentarios con su contador.
+  Decisiones: D-07, D-13
+  Requisitos: RN-010 · F-COM-001 · F-COM-002
+  Fronteras: carga css/style.css y js/conversacion.js.
+  Estado: andamiaje — la lista no se carga hasta que exista la lógica.
+-->
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -17,13 +26,14 @@
             <section class="comment-form">
                 <h2>Nuevo comentario</h2>
                 <form id="commentForm">
+                    <div id="mensajesComentario" class="form-messages" aria-live="polite"></div>
                     <div class="form-group">
                         <label for="author">Nombre:</label>
-                        <input type="text" id="author" name="author" required placeholder="Tu nombre">
+                        <input type="text" id="author" name="author" placeholder="Tu nombre">
                     </div>
                     <div class="form-group">
                         <label for="content">Comentario:</label>
-                        <textarea id="content" name="content" required placeholder="Escribí tu comentario..." rows="4"></textarea>
+                        <textarea id="content" name="content" placeholder="Escribí tu comentario..." rows="4"></textarea>
                     </div>
                     <button type="submit" class="btn-primary">Publicar</button>
                 </form>
@@ -42,6 +52,6 @@
         </footer>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="js/conversacion.js"></script>
 </body>
 </html>
