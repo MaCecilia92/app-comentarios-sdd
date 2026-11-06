@@ -1,10 +1,10 @@
 # design.md — App de Comentarios
 
 - **Feature:** `001-publicar-comentarios`
-- **Versión del documento:** 1.3
+- **Versión del documento:** 1.4
 - **Estado:** APROBADO — base del andamiaje de la Semana 5
 - **Semana:** 4 — SDD II (Spec Anchored)
-- **requirements.md de referencia:** [`requirements.md`](./requirements.md) (misma carpeta, v1.2)
+- **requirements.md de referencia:** [`requirements.md`](./requirements.md) (misma carpeta, v1.3)
 
 > **Este documento es el CÓMO.** Registra decisiones de diseño y su porqué, trazadas contra los
 > IDs del `requirements.md` (formato `F-COM-001 · CA-3` o `RN-001`).
@@ -307,8 +307,15 @@ escritas solo en el plan. -->
   no usa la validación nativa del navegador. Envía siempre y muestra el motivo que devuelve la
   capa de aplicación, junto al formulario que lo originó (D-07). Los textos existen en un solo
   lugar. D-01 queda modificada en su parte de cortesía; la validación en el servidor no cambia.
-  Única excepción: cuando la capa de aplicación **no responde**, la interfaz muestra el mensaje
-  de error de carga de F-COM-002 · CA-6, porque en ese caso no hay ningún motivo que recibir.
+  Única excepción: cuando la capa de aplicación **no responde** o falla sin devolver un motivo,
+  no hay ningún texto que recibir, y la interfaz muestra el mensaje de la spec según lo que
+  estaba haciendo: al cargar, el de F-COM-002 · CA-6; al publicar, "No se pudo publicar.
+  Intentá de nuevo más tarde." (F-COM-001 · CA-10, F-RES-001 · CA-8). Son los dos únicos
+  textos que viven en la interfaz.
+
+<!-- corregido por: revisión del plan de la Semana 6. La excepción solo cubría la carga, y el
+plan usaba ese mismo mensaje cuando fallaba una publicación. -->
+
 - **Alternativas consideradas:** (a) copiar los textos en la interfaz: descartada porque dos
   copias del mismo texto terminan divergiendo; (b) que la interfaz pida el catálogo de textos
   al servidor al cargar: descartada porque agrega una cuarta operación que la spec no pide
@@ -356,6 +363,45 @@ ajustándose a lo implementado. -->
 - **Requisito relacionado:** D-07, D-08 · RN-010 · F-COM-001 · CA-1 · F-COM-002 · CA-1 ·
   F-RES-001 · CA-2, CA-3, CA-5 · F-MOD-001 · CA-4
 
+<!-- D-15 se agregó en la Semana 6, al revisar el plan de la iteración 1: registra decisiones
+que tomé en la sesión de Plan Mode y que habían quedado escritas solo en el plan. -->
+
+### D-15 — Precedencia de los rechazos, identificador inválido, ubicación del éxito de una respuesta y formato del contrato
+
+- **Contexto:** al planificar la iteración 1 aparecieron casos que la spec no fijaba: qué
+  mensaje se devuelve si un pedido tiene varios errores a la vez, qué pasa si el identificador
+  del comentario padre falta o no es un número, dónde se ve el mensaje de éxito de una
+  respuesta si su formulario se cierra (F-RES-001 · CA-2) y en qué formato viajan el
+  identificador y la fecha.
+- **Decisión:**
+  - **Un solo motivo por rechazo**, en este orden: autor o contenido vacíos → contenido fuera
+    de 3 a 500 → autor fuera de 2 a 100. En una respuesta, los datos se validan **antes** de
+    comprobar el comentario padre: con datos inválidos y padre inexistente se devuelve el
+    rechazo por datos (400).
+  - **Identificador del padre ausente o que no es un entero positivo:** se trata como un
+    comentario inexistente (404, mensaje de F-RES-001 · CA-5). No se agrega un texto nuevo.
+  - **Éxito de una respuesta:** como el formulario se cierra, el mensaje "Respuesta publicada
+    correctamente" aparece debajo del comentario padre, en el lugar donde estaba el
+    formulario, durante 3 segundos (RN-010).
+  - **Formato:** el identificador viaja como número entero y la fecha y hora en ISO 8601 con
+    la marca de UTC (por ejemplo, `2026-11-06T14:03:00Z`), para que el navegador la convierta
+    a la hora local sin ambigüedad (D-12).
+  - **Siguen abiertas, a propósito:** el conteo de emojis compuestos (se mide en caracteres
+    Unicode, D-02) y el doble clic (no se deshabilita el botón). Las dos quedan en la sección
+    5.
+- **Alternativas consideradas:** (a) devolver todos los errores juntos: descartada porque
+  RN-010 habla de "el" mensaje junto al formulario y la spec define un texto por caso; (b)
+  comprobar el padre antes que los datos: descartada porque obliga a una lectura del almacén
+  para un pedido que igual se va a rechazar; (c) un mensaje propio para el identificador
+  inválido: descartada porque la spec no lo define y, para el lector, el resultado es el
+  mismo: no hay comentario al que responder; (d) mostrar el éxito arriba de la página:
+  descartada porque contradice RN-010.
+- **Justificación:** son casos que el código iba a resolver de alguna forma. Si la decisión
+  queda solo en el plan, la próxima iteración (o el próximo agente) puede decidir otra cosa
+  sin saberlo. Escritas acá, el evaluador y la implementación parten del mismo contrato.
+- **Requisito relacionado:** RN-010 · RN-005 · D-12, D-14 · F-COM-001 · CA-3 a CA-6 ·
+  F-RES-001 · CA-2, CA-3, CA-5
+
 ---
 
 ### Matriz de trazabilidad (requisito → decisión)
@@ -375,13 +421,15 @@ ajustándose a lo implementado. -->
 | RN-011 Borrado solo por moderador | D-08, D-10 | Sí (por ausencia de borrado en la v1) |
 | F-COM-001 · CA-1 | D-06, D-07, D-12 | Sí |
 | F-COM-001 · CA-2, CA-7 | D-02 | Sí |
-| F-COM-001 · CA-3, CA-4, CA-5, CA-6 | D-01, D-02, D-07, D-13 | Sí |
+| F-COM-001 · CA-3, CA-4, CA-5, CA-6 | D-01, D-02, D-07, D-13, D-15 | Sí |
+| F-COM-001 · CA-10 | D-13 | Sí |
 | F-COM-001 · CA-8, CA-9 | D-05 | Sí |
 | F-COM-002 · CA-1, CA-2 | D-04, D-05, D-12 | Sí |
 | F-COM-002 · CA-3 | D-11 (base vacía para verificarlo) | Sí |
 | F-COM-002 · CA-4, CA-5 | D-06 | Sí |
 | F-COM-002 · CA-6 | D-07 | Sí |
 | F-RES-001 · CA-1, CA-6, CA-7 | — | Comportamiento de la interfaz, sin decisión técnica |
+| F-RES-001 · CA-8 | D-13 | Sí |
 | F-RES-001 · CA-2 | D-03, D-04, D-06 | Sí |
 | F-RES-001 · CA-3 | D-01, D-07, D-13 | Sí |
 | F-RES-001 · CA-4 | D-03 | Sí |

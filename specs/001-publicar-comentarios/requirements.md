@@ -2,7 +2,7 @@
 
 - **Nombre del proyecto:** App de Comentarios
 - **Feature:** `001-publicar-comentarios`
-- **Versión del documento:** 1.2
+- **Versión del documento:** 1.3
 - **Estado:** APROBADO — base del [`design.md`](./design.md)
 - **Semana:** 3 — SDD I (Spec First), anclado en Semana 4
 
@@ -166,6 +166,14 @@ compartir mi opinión con los demás lectores.
   publica, entonces se muestra tal cual fue escrito, sin aplicar ningún formato.
 - **CA-9. Saltos de línea.** Dado que el contenido tiene dos párrafos separados por un salto
   de línea, cuando se publica, entonces se muestra en dos párrafos, igual que se escribió.
+- **CA-10. Falla al publicar.** Dado que el servidor no responde o falla al procesar el
+  pedido, cuando presiono "Publicar", entonces se muestra el mensaje "No se pudo publicar.
+  Intentá de nuevo más tarde." junto al formulario, no se guarda nada y el texto escrito
+  permanece en el formulario.
+
+<!-- corregido por: revisión del plan de la Semana 6. La spec no decía qué ve el lector si
+falla una publicación, y el plan usaba el mensaje de carga de F-COM-002 CA-6, que en ese caso
+es falso. El hueco se cierra en la spec, no en el código. -->
 
 <!-- corregido por: puesta en común (checklist punto 5). Solo existían los rechazos del autor
 (1 y 101 caracteres); faltaba el borde aceptado (2 y 100), como sí estaba para el contenido
@@ -257,6 +265,10 @@ una acción débil ("cuando la miro"). -->
 - **CA-7. Un formulario por comentario.** Dado que el formulario de respuesta de un
   comentario ya está abierto, cuando presiono de nuevo "Responder" en ese mismo comentario,
   entonces el formulario se cierra.
+- **CA-8. Falla al publicar.** Dado que el servidor no responde o falla al procesar el pedido,
+  cuando presiono "Publicar respuesta", entonces se muestra el mensaje "No se pudo publicar.
+  Intentá de nuevo más tarde." junto al formulario de respuesta, no se guarda nada y el
+  formulario queda abierto con lo escrito.
 
 <!-- corregido por: revisión contra la checklist SDD (punto 3). El CA-3 de la plantilla
 ("no es posible responder directo a esa respuesta") no tenía la forma Dado/cuando/entonces
@@ -384,3 +396,4 @@ Preguntas de "¿cómo lo implemento?" que surgieron al escribir la spec. No se r
 | 1.0 | 3 | Primera versión completa sobre la plantilla del curso. |
 | 1.1 | 4 | Correcciones de la puesta en común (checklist puntos 5, 7 y 8): autor sin espacios en los extremos y con bordes aceptados (RN-003, F-COM-001 CA-6 y CA-7), saltos de línea (RN-008, F-COM-001 CA-9), mensajes (RN-010), F-RES-001 CA-3 a CA-5 reescritos. Spec anclada en `specs/001-publicar-comentarios/`. |
 | 1.2 | 4 | Desafío extra: F-MOD-001 (borrar un comentario ofensivo) especificada y diferida, regla RN-011 "solo un moderador puede borrar", glosario de "moderador" y "comentario ofensivo", alcance actualizado. |
+| 1.3 | 6 | Revisión del plan de la iteración 1: F-COM-001 CA-10 y F-RES-001 CA-8, mensaje propio cuando falla una publicación ("No se pudo publicar. Intentá de nuevo más tarde."). |
