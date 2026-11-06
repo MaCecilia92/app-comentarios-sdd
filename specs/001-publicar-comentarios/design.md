@@ -1,7 +1,7 @@
 # design.md — App de Comentarios
 
 - **Feature:** `001-publicar-comentarios`
-- **Versión del documento:** 1.2
+- **Versión del documento:** 1.3
 - **Estado:** APROBADO — base del andamiaje de la Semana 5
 - **Semana:** 4 — SDD II (Spec Anchored)
 - **requirements.md de referencia:** [`requirements.md`](./requirements.md) (misma carpeta, v1.2)
@@ -320,6 +320,42 @@ escritas solo en el plan. -->
 - **Requisito relacionado:** RN-010 · D-01 · D-07 · F-COM-001 · CA-3, CA-4, CA-5, CA-6 ·
   F-RES-001 · CA-3
 
+<!-- D-14 se agregó en la Semana 6, antes de iterar: el script de evaluación necesita un
+contrato fijo, y si lo definía el agente durante la iteración, la evaluación terminaba
+ajustándose a lo implementado. -->
+
+### D-14 — Contrato de red: un único punto de entrada, operaciones con nombre y respuestas con el mensaje de la spec
+
+- **Contexto:** D-08 fija tres operaciones y D-07 exige que la capa de aplicación devuelva el
+  motivo con el texto exacto de la spec, pero ninguna decisión decía cómo se piden las
+  operaciones ni qué forma tiene la respuesta. En la Semana 5 quedó como pendiente. Sin un
+  contrato fijo no se puede escribir una evaluación independiente de la implementación.
+- **Decisión:** la interfaz habla con un único punto de entrada (D-08), con estas reglas:
+  - **Obtener la conversación:** pedido de lectura sin cuerpo. Responde `exito` verdadero y
+    `conversacion`: la lista de comentarios ya ordenada (D-04), donde cada comentario trae
+    `id`, `autor`, `contenido`, `fecha_creacion` (UTC, D-12) y `respuestas`, la lista de sus
+    respuestas con los mismos campos.
+  - **Publicar:** pedido de escritura con un cuerpo JSON que nombra la operación en el campo
+    `operacion`: `publicar_comentario` (con `autor` y `contenido`) o `publicar_respuesta` (con
+    `comentario_id`, `autor` y `contenido`).
+  - **Respuesta de una publicación:** siempre un JSON con `exito` (verdadero o falso) y
+    `mensaje`, con el texto exacto del `requirements.md`. Éxito: código 200. Datos inválidos:
+    400. Comentario padre inexistente: 404.
+  - **Cualquier otro pedido:** se rechaza con `exito` falso. Un pedido de borrado responde
+    "No tenés permiso para borrar" (F-MOD-001 · CA-4) con código 403; cualquier otro método o
+    una operación desconocida, con código 405.
+- **Alternativas consideradas:** (a) un punto de entrada por operación: descartada porque D-08
+  y la estructura de módulos ya definen un único punto de entrada; (b) distinguir las
+  operaciones solo por el método del pedido: descartada porque publicar comentario y publicar
+  respuesta son las dos escrituras y necesitan un nombre explícito; (c) que el agente defina el
+  contrato durante la implementación: descartada porque la evaluación quedaría hecha a medida
+  de lo implementado.
+- **Justificación:** un contrato escrito antes de implementar permite evaluar cada iteración
+  con un script externo, que responde "pasa" o "no pasa" sin opinión (el "Stop Hook" de la
+  Semana 6). Los nombres en español siguen la regla de nombres del dominio.
+- **Requisito relacionado:** D-07, D-08 · RN-010 · F-COM-001 · CA-1 · F-COM-002 · CA-1 ·
+  F-RES-001 · CA-2, CA-3, CA-5 · F-MOD-001 · CA-4
+
 ---
 
 ### Matriz de trazabilidad (requisito → decisión)
@@ -335,7 +371,7 @@ escritas solo en el plan. -->
 | RN-007 Lectura pública | D-09, sección 4 (sin autenticación) | Sí |
 | RN-008 Texto literal | D-05 | Sí |
 | RN-009 Inmutabilidad | D-03, D-08, D-10 | Sí |
-| RN-010 Mensajes | D-07, D-13 | Sí |
+| RN-010 Mensajes | D-07, D-13, D-14 | Sí |
 | RN-011 Borrado solo por moderador | D-08, D-10 | Sí (por ausencia de borrado en la v1) |
 | F-COM-001 · CA-1 | D-06, D-07, D-12 | Sí |
 | F-COM-001 · CA-2, CA-7 | D-02 | Sí |
@@ -349,8 +385,8 @@ escritas solo en el plan. -->
 | F-RES-001 · CA-2 | D-03, D-04, D-06 | Sí |
 | F-RES-001 · CA-3 | D-01, D-07, D-13 | Sí |
 | F-RES-001 · CA-4 | D-03 | Sí |
-| F-RES-001 · CA-5 | D-03, D-07 | Sí |
-| F-MOD-001 · CA-4 | D-08, D-10 | Sí: nadie puede borrar en la v1 |
+| F-RES-001 · CA-5 | D-03, D-07, D-14 | Sí |
+| F-MOD-001 · CA-4 | D-08, D-10, D-14 | Sí: nadie puede borrar en la v1 |
 | F-MOD-001 · CA-1, CA-2, CA-3, CA-5 | D-10 | Diferidos: la feature está fuera del alcance de la v1 |
 
 **Lectura de la matriz:** las once reglas de negocio tienen al menos una decisión que las

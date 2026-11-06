@@ -46,8 +46,10 @@ formato de respuesta). No las repitas acá.
 ## Cómo verificar
 
 - Al cerrar una tarea, decí qué criterios cubre (por ejemplo, `F-COM-001 · CA-3`) y cuáles no
-  pudiste verificar. Todavía no hay pruebas automáticas: si un caso no tiene prueba, señalalo
-  en vez de darlo por cubierto.
+  pudiste verificar. Si un caso no tiene prueba, señalalo en vez de darlo por cubierto.
+- El contrato entre la interfaz y la API es el de `design.md` D-14. Una tarea sobre respuestas
+  no está terminada hasta que `C:\xampp\php\php.exe tests\evaluar_f_res_001.php` termina en
+  PASA. No modifiques los scripts de `tests/` para que pasen: si un caso parece mal, avisá.
 - Entorno local: XAMPP (Apache en el puerto 8080, MySQL con usuario `root` sin contraseña). La
   app se abre en http://localhost:8080/app-comentarios-sdd/index.html y la base se crea desde
   `sql/schema.sql`.
