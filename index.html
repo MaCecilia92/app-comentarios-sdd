@@ -6,7 +6,7 @@
   Decisiones: D-07, D-13
   Requisitos: RN-010 · F-COM-001 · F-COM-002
   Fronteras: carga css/style.css y js/conversacion.js.
-  Estado: andamiaje — la lista no se carga hasta que exista la lógica.
+  Estado: implementado para F-RES-001 (+ mínimo de F-COM-001 y F-COM-002).
 -->
 <html lang="es">
 <head>
@@ -25,7 +25,7 @@
         <main>
             <section class="comment-form">
                 <h2>Nuevo comentario</h2>
-                <form id="commentForm">
+                <form id="commentForm" novalidate>
                     <div id="mensajesComentario" class="form-messages" aria-live="polite"></div>
                     <div class="form-group">
                         <label for="author">Nombre:</label>

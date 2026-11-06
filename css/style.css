@@ -1,11 +1,12 @@
 /*
  * Módulo: Interfaz de conversación (estilos)
  * Responsabilidad: estilos nativos de la página, con variables CSS.
- * Decisiones: D-08, D-09
- * Requisitos: RN-010 (mensajes junto a su formulario)
+ * Decisiones: D-05, D-08, D-09
+ * Requisitos: RN-008 (saltos de línea), RN-010 (mensajes junto a su formulario) · F-RES-001
  * Fronteras: solo lo usa index.html.
- * Estado: estilos del proyecto base, sin la regla de borrado (D-08). Las clases se revisan
- *   cuando se implemente la interfaz de respuestas.
+ * Estado: estilos del proyecto base, sin la regla de borrado (D-08), más los de respuestas.
+ *   Las clases nuevas usan los nombres del dominio en español (regla 9); las heredadas del
+ *   proyecto base conservan su nombre.
  */
 
 * {
@@ -198,4 +199,87 @@ footer {
     border-radius: var(--radius);
     margin-bottom: 16px;
     font-size: 0.9rem;
+}
+
+/* ---------- Respuestas (F-RES-001) ---------- */
+
+/* RN-008: el texto del lector conserva sus saltos de línea. */
+.comment-author,
+.comment-content {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.acciones-comentario {
+    margin-top: 10px;
+}
+
+.boton-responder,
+.boton-cancelar {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 0;
+}
+
+.boton-cancelar {
+    color: var(--text-muted);
+    margin-left: 12px;
+}
+
+.boton-responder:hover,
+.boton-cancelar:hover {
+    text-decoration: underline;
+}
+
+.zona-respuesta .success-message {
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+.formulario-respuesta {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.formulario-respuesta label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.formulario-respuesta input,
+.formulario-respuesta textarea {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font: inherit;
+    font-weight: normal;
+}
+
+.botones-formulario {
+    display: flex;
+    align-items: center;
+}
+
+.respuestas {
+    margin-top: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+}
+
+.respuesta {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 8px;
 }
