@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "app-comentarios-mysql": {
+      "command": "cmd",
+      "args": ["/c", "mcp-server-mysql"],
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "app_comentarios_lectura",
+        "MYSQL_PASS": "${APP_COMENTARIOS_MYSQL_CLAVE}",
+        "MYSQL_DB": "app_comentarios",
+        "ALLOW_INSERT_OPERATION": "false",
+        "ALLOW_UPDATE_OPERATION": "false",
+        "ALLOW_DELETE_OPERATION": "false",
+        "ALLOW_DDL_OPERATION": "false"
+      }
+    }
+  }
+}

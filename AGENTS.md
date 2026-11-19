@@ -34,6 +34,12 @@ Las reglas que solo valen para el servidor están en [`api/AGENTS.md`](api/AGENT
 aplican cuando trabajás dentro de `api/` (consultas parametrizadas, operaciones permitidas,
 formato de respuesta). No las repitas acá.
 
+## Acceso a la base por MCP
+
+1. Consultá la base solo por el servidor MCP del proyecto (`app-comentarios-mysql`, en `.mcp.json`), que se conecta con el usuario `app_comentarios_lectura`: tiene solo SELECT sobre `app_comentarios` y el servidor tiene desactivados INSERT, UPDATE y DELETE. Usalo para leer el esquema y los datos, nunca para escribir. (origen: RN-009 · D-08, D-10)
+2. Si una tarea necesita escribir en la base o cambiar su estructura, no lo intentes por MCP ni con `root`: proponé el script en `sql/` y esperá mi aprobación antes de ejecutarlo. (origen: design.md §3, "Esquema y migraciones" · regla 10)
+3. La contraseña vive solo en la variable de entorno `APP_COMENTARIOS_MYSQL_CLAVE`. No la escribas en archivos del repo ni la muestres en la salida. (origen: design.md §3, "Configuración")
+
 ## Lo que NO tenés que hacer
 
 - No agregues funcionalidad fuera de alcance sin un requisito previo en `requirements.md`: likes, reacciones, búsqueda, filtros, paginación, login, edición, borrado, tiempo real, varias conversaciones. (origen: requirements.md §6)
