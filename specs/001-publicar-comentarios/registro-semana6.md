@@ -37,4 +37,9 @@ En una sesión de Claude Code que cargó las reglas desde el repo, le pedí impl
 - [x] CA-6 "Cancelar" cierra el formulario sin guardar.
 - [x] CA-7 Presionar de nuevo "Responder" cierra el formulario.
 
-**Contraste con el Plan Mode de la Semana 5:** [completar: qué ganaste y qué perdiste sin revisar un plan antes; qué hizo de freno en lugar de la revisión del plan, por ejemplo el evaluador y el corte].
+**Contraste con el Plan Mode de la Semana 5:**
+
+- **Qué hizo de freno.** En la Semana 5 el freno fue la revisión del plan: corregí cuatro cosas antes de que existiera un solo archivo. Acá no hubo plan que revisar, y el freno lo pusieron el evaluador y el corte. El contrato D-14 y el script se escribieron antes de iterar, así que el agente no podía ajustar la evaluación a lo que implementaba, y el corte de 3 corridas le ponía un límite al ensayo y error.
+- **Qué gané.** Velocidad y una señal objetiva: cada corrida respondió "pasa" o "no pasa" sin depender de mi lectura. Con un contrato fijo, alcanzaron 2 corridas.
+- **Qué perdí.** No pude revisar las decisiones antes de que llegaran al código. Las que el evaluador no mide se tomaron durante la implementación y las vi recién en el reporte final: el 405 sin mensaje, el orden 400 antes que 404 y la pérdida de los formularios abiertos al recargar la lista. Por suerte el agente las señaló como dudas en lugar de resolverlas por su cuenta. Los criterios de interfaz (CA-1, CA-4, CA-6, CA-7) también quedaron afuera del evaluador y tuve que verificarlos a mano.
+- **Conclusión.** ReAct funciona cuando hay un criterio externo y fijado de antemano que dice cuándo terminar. Lo que ese criterio no cubre sigue necesitando una revisión humana: un plan antes o una verificación después. En la próxima iteración, antes de soltar al agente, voy a revisar qué partes de la tarea quedan fuera del evaluador.
