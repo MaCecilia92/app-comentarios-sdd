@@ -4,8 +4,7 @@
  * Decisiones: D-08, D-09
  * Requisitos: RN-010 (mensajes junto a su formulario)
  * Fronteras: solo lo usa index.html.
- * Estado: estilos del proyecto base, sin la regla de borrado (D-08). Las clases se revisan
- *   cuando se implemente la interfaz de respuestas.
+ * Estado: estilos del proyecto base, sin la regla de borrado (D-08), más los de respuestas.
  */
 
 * {
@@ -159,6 +158,51 @@ h2 {
 .comment-content {
     color: var(--text);
     line-height: 1.6;
+    white-space: pre-wrap; /* RN-008: conserva los saltos de línea */
+    overflow-wrap: anywhere;
+    margin-bottom: 8px;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 6px 16px;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #F3EEFF;
+}
+
+.reply-messages {
+    margin-top: 12px;
+}
+
+.reply-form {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg);
+    border-radius: var(--radius);
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.replies {
+    margin-top: 12px;
+    margin-left: 24px;
+}
+
+.reply-card {
+    border-left: 3px solid var(--border);
+    padding: 8px 12px;
+    margin-bottom: 8px;
 }
 
 .loading {

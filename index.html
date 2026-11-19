@@ -4,9 +4,9 @@
   Responsabilidad: estructura de la página: formulario de nuevo comentario con su zona de
     mensajes, y la lista de comentarios con su contador.
   Decisiones: D-07, D-13
-  Requisitos: RN-010 · F-COM-001 · F-COM-002
-  Fronteras: carga css/style.css y js/conversacion.js.
-  Estado: andamiaje — la lista no se carga hasta que exista la lógica.
+  Requisitos: RN-010 · F-COM-001 · F-COM-002 · F-RES-001
+  Fronteras: carga css/style.css y js/conversacion.js, que arma la lista y los formularios de
+    respuesta.
 -->
 <html lang="es">
 <head>
@@ -25,7 +25,7 @@
         <main>
             <section class="comment-form">
                 <h2>Nuevo comentario</h2>
-                <form id="commentForm">
+                <form id="commentForm" novalidate>
                     <div id="mensajesComentario" class="form-messages" aria-live="polite"></div>
                     <div class="form-group">
                         <label for="author">Nombre:</label>
